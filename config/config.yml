@@ -1,0 +1,28 @@
+app:
+  name: 'url-shortener'
+  version: 'v1'
+  level: 'local'
+  host: 'http://localhost:8888/'
+
+http:
+  port: '8888'
+  timeout: '15s'
+
+logger:
+  log_level: 'local'
+
+postgres:
+  user: "app"
+  password: "secret"
+  host: "localhost"
+  port: "5490"
+  name: "app"
+  pool_max: 20
+  max_conn_lifetime: '24h'
+  max_conn_idle_time: '30m'
+  ssl_mode: "disable"
+
+expiring_processor:
+  ticker_timeout: '30s'
+  show_logs: true
+  link_expire: '10m'

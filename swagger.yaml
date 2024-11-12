@@ -1,0 +1,189 @@
+consumes:
+    - application/json
+definitions:
+    DeleteURLOut:
+        properties:
+            status:
+                example: ok
+                type: string
+                x-go-name: Status
+        type: object
+        x-go-package: github.com/Chingizkhan/url-shortener/internal/dto
+    ShortenURLIn:
+        properties:
+            url:
+                type: string
+                x-go-name: URL
+        type: object
+        x-go-package: github.com/Chingizkhan/url-shortener/internal/dto
+    ShortenURLOut:
+        properties:
+            link:
+                type: string
+                x-go-name: Link
+        type: object
+        x-go-package: github.com/Chingizkhan/url-shortener/internal/dto
+    Shortening:
+        properties:
+            created_at:
+                format: date-time
+                type: string
+                x-go-name: CreatedAt
+            expire_at:
+                format: date-time
+                type: string
+                x-go-name: ExpireAt
+            link:
+                type: string
+                x-go-name: Link
+            source_url:
+                type: string
+                x-go-name: SourceURL
+            updated_at:
+                format: date-time
+                type: string
+                x-go-name: UpdatedAt
+            visits:
+                format: int64
+                type: integer
+                x-go-name: Visits
+        type: object
+        x-go-package: github.com/Chingizkhan/url-shortener/internal/domain
+info:
+    description: |-
+        REST API для сервиса сокращателя ссылок.
+
+        Базовая структура <b>URL: {scheme}://{host}/{version}/{actor}/...</b><br/>
+        &ensp; - <b>scheme</b> - протокол по которому работает запрос.<br/>
+        &ensp; - <b>host</b> - домен/сервер на который идет запрос.<br/>
+        &ensp; - <b>version</b> - версия апи.<br/>
+        &ensp; - <b>actor</b> - тип клиента для которого данный эндпоинт предназначен.<br/>
+
+        Типы actor:<br/>
+        &ensp; - <b>shortener</b> - сам сокращатель ссылок<br/>
+        &ensp; - <b>link</b> - сокращенная ссылка<br/><br/>
+
+        <h3>По умолчанию ссылка создается с 6 символами, вы можете это конфигурировать передав флаг <i>-link_len</i> с необходимым количеством символов</h3>
+    title: REST API для сервиса сокращателя ссылок.
+    version: 1.0.0
+paths:
+    /{link}:
+        delete:
+            description: |-
+                <i>Генерация короткого уникального идентификатора для ссылки в ответ</i> <br/><br/>
+                Время жизни коротких ссылок 30 дней
+            operationId: deleteURLRequest
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  type: string
+                  x-go-name: ID
+            responses:
+                "200":
+                    $ref: '#/responses/deleteURLResponse'
+                "500":
+                    $ref: '#/responses/errorResponseSwagger'
+            summary: Удаляет ссылку
+            tags:
+                - link
+        get:
+            description: |-
+                <i>Генерация короткого уникального идентификатора для ссылки в ответ</i> <br/><br/>
+                Время жизни коротких ссылок 30 дней
+            operationId: statsURLRequest
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  type: string
+                  x-go-name: ID
+            responses:
+                "200":
+                    $ref: '#/responses/statsURLResponse'
+                "500":
+                    $ref: '#/responses/errorResponseSwagger'
+            summary: дает информацию
+            tags:
+                - link
+        post:
+            description: редирект
+            operationId: linkRedirectRequest
+            parameters:
+                - in: path
+                  name: id
+                  required: true
+                  type: string
+                  x-go-name: ID
+            responses:
+                "307":
+                    description: ""
+                "500":
+                    $ref: '#/responses/errorResponseSwagger'
+            tags:
+                - link
+    /shortener:
+        get:
+            description: |-
+                <i>Генерация короткого уникального идентификатора для ссылки в ответ</i> <br/><br/>
+                Время жизни коротких ссылок 30 дней
+            operationId: linkListRequest
+            responses:
+                "200":
+                    $ref: '#/responses/shortenUrlResponse'
+                "500":
+                    $ref: '#/responses/errorResponseSwagger'
+            summary: Выводит список ссылок пользователя
+            tags:
+                - shortener
+        post:
+            description: |-
+                <i>Генерация короткого уникального идентификатора для ссылки в ответ</i> <br/><br/>
+                Время жизни коротких ссылок 30 дней
+            operationId: shortenUrlInRequest
+            responses:
+                "200":
+                    $ref: '#/responses/shortenUrlResponse'
+                "500":
+                    $ref: '#/responses/errorResponseSwagger'
+            summary: Генерация короткой ссылки
+            tags:
+                - shortener
+produces:
+    - application/json
+responses:
+    deleteURLResponse:
+        description: ""
+        headers:
+            body: {}
+        schema:
+            $ref: '#/definitions/DeleteURLOut'
+    errorResponseSwagger:
+        description: ""
+        schema:
+            properties:
+                error:
+                    description: Код ошибки
+                    example: already_exists
+                    type: string
+                    x-go-name: Error
+            type: object
+    shortenUrlResponse:
+        description: ""
+        schema:
+            $ref: '#/definitions/ShortenURLOut'
+    statsURLResponse:
+        description: ""
+        headers:
+            body: {}
+        schema:
+            $ref: '#/definitions/Shortening'
+schemes:
+    - http
+    - https
+securityDefinitions:
+    Bearer:
+        in: header
+        name: Authorization
+        type: apiKey
+swagger: "2.0"

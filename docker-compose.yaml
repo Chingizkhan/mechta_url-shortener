@@ -1,0 +1,45 @@
+services:
+  db:
+    image: postgres:15.2-alpine
+    restart: unless-stopped
+    container_name: url-shortener-db
+    volumes:
+      - url-shortener-db:/var/lib/postgresql/data
+    ports:
+      - "5490:5432"
+    environment:
+      - POSTGRES_USER=app
+      - POSTGRES_DB=app
+      - POSTGRES_PASSWORD=secret
+    networks:
+      - url-shortener
+
+  app:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: unless-stopped
+    ports:
+      - "8888:8888"
+    container_name: url-shortener-app
+    #    environment:
+    #      - DB_SOURCE=postgresql://app:secret@db:5432/app?sslmode=disable
+    networks:
+      - url-shortener
+    depends_on:
+      - db
+#    entrypoint:
+#      - "/app/wait-for"
+#      - "db:5432"
+#      - "--"
+#      - "/app/start.sh"
+#    command:
+#      - "/app/main"
+
+volumes:
+  url-shortener-db:
+
+networks:
+  url-shortener:
+    driver: bridge
+    name: url-shortener
